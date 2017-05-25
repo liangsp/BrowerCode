@@ -1,0 +1,69 @@
+######################################################################
+### Linux Makefile definitions
+###
+### Environment Variables:
+###
+### VBROKERDIR (required)	: set to base directory of VisiBroker
+###				: for C++ installation.
+######################################################################
+
+CSRC_HOME=$(ABM_HOME)/csrc
+
+#以后对平台相关性的操作改为操作对应的stdmk.XXXX
+#include $(CSRC_HOME)/stdmk.hp64
+#include $(CSRC_HOME)/stdmk.hp32
+#include $(CSRC_HOME)/stdmk.aix64
+#include $(CSRC_HOME)/stdmk.aix32
+include $(CSRC_HOME)/stdmk.linux64
+#include $(CSRC_HOME)/stdmk.linux32
+
+##以下部分与平台无关
+BIN_PATH=$(ABM_HOME)/bin
+
+#Oracle Define
+INCORA=-I$(ORACLE_HOME)/rdbms/demo -I$(ORACLE_HOME)/rdbms/public \
+	 -I$(ORACLE_HOME)/plsql/public -I$(ORACLE_HOME)/network/public -DUSE_ORACLE
+LIBORA = -L$(ORACLE_HOME)/lib -L$(ORACLE_HOME)/rdbms/lib -lc -lclntsh
+
+#TT Define
+INCTT = -I$(TT_HOME)/include -DUSE_TT
+LIBTT = -L$(TT_HOME)/lib -lttclient
+#-lttco
+#如果程序和内存数据库连接不是使用C/S模式时，使用该选项
+# -ltten
+#如果程序和内存数据库连接使用C/S模式时，使用该选项
+#-lttclient
+
+COMMON_PATH = $(CSRC_HOME)/common
+BASE_PATH = $(CSRC_HOME)/base
+
+CCINCLUDES = $(INCTT) -I$(COMMON_PATH) -I$(BASE_PATH) $(INCORA) -I$(TUXDIR)/include -I.
+
+#使用共享内存消息队列
+CCFLAGS = $(MYFLAGS) $(MYINCLUDE) $(CCINCLUDES) $(INCLUDE) $(DEBUG) $(DEF) -D_SHM_MSG_QUEUE_ -DMW_TUXEDO -D_DEBUG_
+#使用系统消息队列
+#CCFLAGS = $(MYFLAGS) $(MYINCLUDE) $(CCINCLUDES) $(INCLUDE) $(DEBUG) $(DEF)
+
+DBLIBS = $(LIBORA) $(LIBTT)
+
+LINK =  $(CC) $(LINKFLAG) $(LINKLIBS) $(DBLIBS)
+LINKA  = ar $(LIBAMODE) -rs
+
+VPATH = $(MY_VPATH):$(COMMON_PATH):$(BASE_PATH)
+
+#定义Common需要的文件
+COMMON.SO = $(LIB_PATH)/libABMCommon.so
+LIBCOMMON = -lABMCommon
+
+#定义BASE需要的文件
+BASE.SO = $(LIB_PATH)/libABMBase.so
+LIBBASE = -lABMBase
+
+LIBICONV = `if [ "$(OS)" = "AIX" ]; then echo '-liconv'; fi`
+
+.SUFFIXES: .cpp .c .h
+
+.cpp.o:
+	$(CC) $(CCFLAGS) -c -g -o $@ $<
+.c.o:
+	$(CC) $(CCFLAGS) -c -g -o $@ $

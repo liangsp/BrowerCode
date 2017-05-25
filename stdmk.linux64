@@ -1,0 +1,28 @@
+######################################################################
+### Linux Makefile definitions
+###
+### Environment Variables:
+###
+### VBROKERDIR (required)	: set to base directory of VisiBroker
+###				: for C++ installation.
+######################################################################
+
+### Platform specific compiler definitions (multi-threaded)
+#和环境有关的主要是使用的类库和使用的编译器、编译宏等
+OS = LINUX
+CC= g++ -g -w -fPIC
+LIBCC = g++ -g
+LIB_PATH = $(ABM_HOME)/lib
+DEF = -D$(OS) -g -D_NS_STD -D_VIS_STD -D_REENTRANT -DTHREAD -DPTHREADS -D_GNU_SOURCE -D__USE_UNIX98 -D_MULTI_THREADED -DORACLE -DBIT64 -D_LP64_ -D_64BIT_ -D_LP64 -DWORDSIZE==64 -D_GCC447_
+STDCC_LIBS = -ldl -lpthread
+
+#ORACLE链接库
+LIBORA = -lclntsh
+
+#编译需要的链接库
+LDFLAGS = -pg -L$(LIB_PATH) -L$(VBROKERDIR)/lib -L$(ORACLE_HOME)/lib -L$(ORACLE_HOME)/rdbms/lib -L$(ABM_HOME)/xerces/lib
+LINKFLAG = $(LDFLAGS)
+LINKLIBS = $(LIBDC) $(STDCC_LIBS) $(LIBORA) $(MY_LIB) $(MYLIB)
+LINKSO = $(LIBCC) $(LINKFLAG) $(LINKLIBS) -shared
+LINKDLL = $(LIBCC) $(LINKFLAG) $(LINKLIBS) -shared
+
