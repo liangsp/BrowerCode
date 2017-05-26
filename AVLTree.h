@@ -1,8 +1,8 @@
 /**
-* @file 	AVLTree.h
-* @brief 	平衡二叉树类
-* @version 	1.0
-* @date 	2012-11-20
+* @file 	 AVLTree.h
+* @brief 	 平衡二叉树类
+* @version 	 1.0
+* @date 	 2012-11-20
 * @bug
 **/
 
