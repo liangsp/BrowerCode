@@ -1,28 +1,21 @@
-/**
-* @file 	 AVLTree.h
-* @brief 	 平衡二叉树类
-* @version 	 1.0
-* @date 	 2012-11-20
-* @bug
-**/
-
-////////////////////////////////////////////////////////////////
-// Note:                                                      //
-// there must be a function T::Compare(T&)                    //
-// or the function Compare of teh Template-Klasse             //
-// CAVLNode<T> has to be overridden.                          //
-////////////////////////////////////////////////////////////////
-
-
-// Forward-Deklarationen
-// template <class T>
-// class CAVLNode;
+/*!
+ * @file    AVLTree.h
+ * @brief   AVL平衡二叉树
+ *
+ * Copyright (c) 2015 chinasoft Tech.Co.,Ltd
+ *
+ * @author	  lsp74391 
+ * @date      2011/5/26
+ * @version   1.0.0
+ *
+*******************************************************************************
+ */
 
 #ifndef __AVL_TREE_H__
 #define __AVL_TREE_H__
 
 #include <assert.h>
-#include <stdlib.h>    // abs
+#include <stdlib.h>
 
 namespace lspublic {
 
@@ -30,51 +23,39 @@ namespace lspublic {
     #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
+template <class T> class CAVLTree;
+template <class T> class CAVLTreeIterator;
 
-template <class T>
-class CAVLTree;
+//template <class T> 
+//class CAVLTreeDialog;
 
-template <class T>
-class CAVLTreeIterator;
 
-/* siehe unter
-template <class T>
-class CAVLTreeDialog;
+/*!
+** @name      CAVLNode
+** @brief     AVL-TREE平衡二叉树节点类
+**
+******************************************************************************* 
 */
-
-////////////////////////////////////////////////////////////////
-// AVL-treenode (=subtree) (Template-Version)                 //
-////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////
-// AVL-Baumknoten (=Teilbaum) (Template-Variante)             //
-////////////////////////////////////////////////////////////////
-
 template <class T>
 class CAVLNode
 {
 public:
-    // standard constructor, constructors, destructor
-    // Standard-Konstruktor, Konstruktor(en) und Destruktor
-    CAVLNode(
-			T* data,
-			int balance = 0,
-			CAVLNode<T>* parent = NULL,
-			CAVLNode<T>* left = NULL,
-			CAVLNode<T>* right = NULL
+    // construction and destruction
+    CAVLNode(T* data,
+			 int balance = 0,
+			 CAVLNode<T>* parent = NULL,
+			 CAVLNode<T>* left = NULL,
+			 CAVLNode<T>* right = NULL
 	);
     virtual ~CAVLNode();
 
     // searching
-    // Suchen
     CAVLNode<T>* Search(const T* data);
 
     // comparing
-    // Vergleich
     static int Compare(const T& t1, const T& t2);
 
     // information about the position in the tree
-    // Informationen ?ber die Position im Baum
     bool IsRoot() const;
     bool IsLeftSibling() const;
     bool IsRightSibling() const;
@@ -82,13 +63,11 @@ public:
     bool HasRightSibling() const;
 
     // further information
-    // Weitere Informationen
     int GetDepth() const;
     int GetLevel() const;
     int NodesInTree() const;
 
     // navigation in the tree
-    // Navigation im Baum
     CAVLNode<T>* GetRoot();
 
     CAVLNode<T>* GetLeftSibling();
@@ -101,46 +80,35 @@ public:
     CAVLNode<T>* GetNextNodeInOrder();
 
     // restructuration
-    // Restrukturierungs-Ma?nahmen
     bool LeftRotation();
     bool RightRotation();
     bool DoubleRotationLeft();
     bool DoubleRotationRight();
 
-
     // Diagnostics
     bool CheckBalances(const char * buffer = NULL, unsigned int buflen = 0) const;
 
-    // drawing into a device context, not fully implemented
-    // Visualisierung in einem Ger?tekontext
- #ifdef _MSC_VER
-     void Draw(CDC* dc, CRect& rect);
- #endif
+// drawing into a device context, not fully implemented
+// #ifdef _MSC_VER
+//     void Draw(CDC* dc, CRect& rect);
+// #endif
 
     // item-data
-    // Datenelement
     T* Data;
 
     // informationen about the height of the subtrees
     // -1: left subtree is by 1 higher than the right one
     //  0: both subtrees have the same height
     //  1: right subtree is by 1 higher than the left one
-
-    // Informationen ?ber die Tiefe der Teilb?ume
-    // -1: linker Baum ist um 1 tiefer als rechter
-    //  0: beide Teilb?ume haben die gleiche Tiefe
-    //  1: rechter Baum ist um 1 tiefer als linker
-
     int Balance;
 
     // parent node
-    // ?bergeordneter Knoten
     CAVLNode<T>* Parent;
 
     // left and right subtree
-    // Linker und rechter Teilbaum
     CAVLNode<T>* Left;
     CAVLNode<T>* Right;
+    
 private:
     CAVLNode<T>* GetInsertPosition(const T* data);
     bool RestructureInsert();
@@ -177,7 +145,6 @@ bool CAVLNode<T>::RestructureInsert()
     while (!item->IsRoot())
     {
         // rule 1
-        // Regel 1
         if (item->IsLeftSibling() && item->Parent->Balance == 0)
         {
             item->Parent->Balance = -1;
@@ -191,7 +158,6 @@ bool CAVLNode<T>::RestructureInsert()
             continue;
         }
         // rule 2
-        // Regel 2
         if (item->IsLeftSibling() && item->Parent->Balance == 1)
         {
             item->Parent->Balance = 0;
@@ -203,7 +169,6 @@ bool CAVLNode<T>::RestructureInsert()
             break;
         }
         // rule 3
-        // Regel 3
         if (item->IsLeftSibling() && item->Parent->Balance == -1)
         {
             if (item->Balance == 1)
@@ -227,9 +192,6 @@ bool CAVLNode<T>::RestructureInsert()
 template <class T>
 bool CAVLNode<T>::RestructureDelete()
 {
-    // Regeln f?r den Elternknoten des gerade gel?schten Blattes
-    // anwenden, bevor mit dem eigentlichen Aufstieg begonnen
-    // werden kann
     CAVLNode<T>* item = this;
     // Regel 1
     if (item->Balance == 0 && item->Left == NULL)
@@ -257,12 +219,12 @@ bool CAVLNode<T>::RestructureDelete()
         if (item->Left->Balance == 1)
         {
             item->DoubleRotationLeft();
-            item = item->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+            item = item->Parent; 
         }
         else
         {
             item->RightRotation();
-            item = item->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+            item = item->Parent; 
         }
         if (item->Balance == 1)
             return true;
@@ -272,18 +234,17 @@ bool CAVLNode<T>::RestructureDelete()
         if (item->Right->Balance == -1)
         {
             item->DoubleRotationRight();
-            item = item->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+            item = item->Parent;
         }
         else
         {
             item->LeftRotation();
-            item = item->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+            item = item->Parent; 
         }
         if (item->Balance == -1)
             return true;
-        //return true;
     }
-    // Beginn des eigentlichen Aufstiegs
+
     while (!item->IsRoot())
     {
         // Regel 1
@@ -316,12 +277,12 @@ bool CAVLNode<T>::RestructureDelete()
             if (item->Parent->Left->Balance == 1)
             {
                 item->Parent->DoubleRotationLeft();
-                item = item->Parent->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+                item = item->Parent->Parent; 
             }
             else
             {
                 item->Parent->RightRotation();
-                item = item->Parent->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+                item = item->Parent->Parent; 
             }
             if (item->Balance == 1)
                 return true;
@@ -332,12 +293,12 @@ bool CAVLNode<T>::RestructureDelete()
             if (item->Parent->Right->Balance == -1)
             {
                 item->Parent->DoubleRotationRight();
-                item = item->Parent->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+                item = item->Parent->Parent; 
             }
             else
             {
                 item->Parent->LeftRotation();
-                item = item->Parent->Parent; // Zeiger sind durch die Rotation etwas verrutscht
+                item = item->Parent->Parent; 
             }
             if (item->Balance == -1)
                 return true;
@@ -527,14 +488,12 @@ CAVLNode<T>* CAVLNode<T>::GetInsertPosition(const T* data)
         if (!Right) return this;
         return Right->GetInsertPosition(data);
     case  0:
-        return NULL; // Fehler, Objekt schon im Baum
-        // error, object already in the tree (only inserted once!)
+        return NULL;
     case  1:
         if (!Left) return this;
         return Left->GetInsertPosition(data);
     }
-    return NULL; // tritt nie auf
-    // never happens
+    return NULL; 
 };
 
 template <class T>
@@ -545,7 +504,6 @@ bool CAVLNode<T>::LeftRotation()
     if (Right == NULL) return false;
 
     CAVLNode<T>* b = Right;
-    // Falls nicht die Wurzel: Knoten b wird Kind
     if (!IsRoot())
     {
         if (IsLeftSibling())
@@ -559,15 +517,12 @@ bool CAVLNode<T>::LeftRotation()
         b->Parent = NULL;
     }
 
-    // Zeiger korrekt umsetzen
     Right = b->Left;
     b->Left = this;
 
-    // Elternzeiger setzen
     Parent = b;
     if (Right != NULL) Right->Parent = this;
 
-    // Balancen setzen
     if (b->Balance == 0)
     {
         Balance = 1;
@@ -590,7 +545,6 @@ bool CAVLNode<T>::RightRotation()
     if (Left == NULL) return false;
 
     CAVLNode<T>* b = Left;
-    // Falls nicht die Wurzel: Knoten b wird Kind
     if (!IsRoot())
     {
         if (IsLeftSibling())
@@ -604,15 +558,12 @@ bool CAVLNode<T>::RightRotation()
         b->Parent = NULL;
     }
 
-    // Zeiger korrekt umsetzen
     Left = b->Right;
     b->Right = this;
 
-    // Elternzeiger setzen
     Parent = b;
     if (Left != NULL) Left->Parent = this;
 
-    // Balancen setzen
     if (b->Balance == 0)
     {
         Balance = -1;
@@ -637,7 +588,6 @@ bool CAVLNode<T>::DoubleRotationLeft()
     CAVLNode<T>* b = Left;
     CAVLNode<T>* c = Left->Right;
 
-    // Falls nicht die Wurzel: Knoten c wird Kind
     if (!IsRoot())
     {
         if (IsLeftSibling())
@@ -646,20 +596,17 @@ bool CAVLNode<T>::DoubleRotationLeft()
             Parent->Right = c;
     }
 
-    // Zeiger korrekt umsetzen
     b->Right = c->Left;
     Left = c->Right;
     c->Left = b;
     c->Right = this;
 
-    // Elternzeiger setzen
     c->Parent = Parent;
     Parent = c;
     b->Parent = c;
     if (b->Right != NULL) b->Right->Parent = b;
     if (Left != NULL) Left->Parent = this;
 
-    // Balancen setzen
     switch (c->Balance)
     {
     case -1:
@@ -690,7 +637,6 @@ bool CAVLNode<T>::DoubleRotationRight()
     CAVLNode<T>* b = Right;
     CAVLNode<T>* c = Right->Left;
 
-    // Falls nicht die Wurzel: Knoten c wird Kind
     if (!IsRoot())
     {
         if (IsLeftSibling())
@@ -699,20 +645,17 @@ bool CAVLNode<T>::DoubleRotationRight()
             Parent->Right = c;
     }
 
-    // Zeiger korrekt umsetzen
     Right = c->Left;
     b->Left = c->Right;
     c->Left = this;
     c->Right = b;
 
-    // Elternzeiger setzen
     c->Parent = Parent;
     Parent = c;
     b->Parent = c;
     if (Right != NULL) Right->Parent = this;
     if (b->Left != NULL) b->Left->Parent = b;
 
-    // Balancen setzen
     switch (c->Balance)
     {
     case -1:
@@ -733,110 +676,92 @@ bool CAVLNode<T>::DoubleRotationRight()
     return true;
 };
 
-#ifdef _MSC_VER
-template <class T>
-void CAVLNode<T>::Draw(CDC* dc, CRect& rect)
-{
-    int depth = GetDepth();
-    CSize Size = dc->GetTextExtent(*Data);
-    dc->TextOut((rect.left+rect.right)/2-Size.cx/2, rect.top, *Data);
+//#ifdef _MSC_VER
+//template <class T>
+//void CAVLNode<T>::Draw(CDC* dc, CRect& rect)
+//{
+//    int depth = GetDepth();
+//    CSize Size = dc->GetTextExtent(*Data);
+//    dc->TextOut((rect.left+rect.right)/2-Size.cx/2, rect.top, *Data);
+//
+//    if (Left != NULL)
+//    {
+//        CRect rect1 = rect;
+//        rect1.top += 2*Size.cy;
+//        rect1.right = (rect.right+rect.left)/2;
+//        dc->MoveTo((rect.left+rect.right)/2, rect.top+Size.cy);
+//        dc->LineTo((rect1.left+rect1.right)/2, rect1.top);
+//        Left->Draw(dc, rect1);
+//    }
+//    if (Right != NULL)
+//    {
+//        CRect rect2 = rect;
+//        rect2.top += 2*Size.cy;
+//        rect2.left = (rect.right+rect.left)/2;
+//        dc->MoveTo((rect.left+rect.right)/2, rect.top+Size.cy);
+//        dc->LineTo((rect2.left+rect2.right)/2, rect2.top);
+//        Right->Draw(dc, rect2);
+//    }
+//};
+//#endif
 
-    if (Left != NULL)
-    {
-        CRect rect1 = rect;
-        rect1.top += 2*Size.cy;
-        rect1.right = (rect.right+rect.left)/2;
-        dc->MoveTo((rect.left+rect.right)/2, rect.top+Size.cy);
-        dc->LineTo((rect1.left+rect1.right)/2, rect1.top);
-        Left->Draw(dc, rect1);
-    }
-    if (Right != NULL)
-    {
-        CRect rect2 = rect;
-        rect2.top += 2*Size.cy;
-        rect2.left = (rect.right+rect.left)/2;
-        dc->MoveTo((rect.left+rect.right)/2, rect.top+Size.cy);
-        dc->LineTo((rect2.left+rect2.right)/2, rect2.top);
-        Right->Draw(dc, rect2);
-    }
-};
-#endif
 
-////////////////////////////////////////////////////////////////
-// AVL-Tree (Template-Version)                                //
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-// AVL-Baum (Template-Variante)                               //
-////////////////////////////////////////////////////////////////
-
-// Requirements for the class T:
-// Objects of class T must be comparable.
-// A function
-// int T::Compare(const T& t) const
-// must be implemented.
-// Return values:
-//    -1, if *this <  t
-//     0, if *this == t
-//     1, if *this >  t
-
-// Anforderungen an die Klasse T:
-// Objekte der Klasse T m?ssen vergleichbar sein.
-// Der Vergleich erfolgt ?ber eine Funktion
-// int T::Compare(const T& t) const
-// R?ckgabewerte:
-//    -1, falls *this <  t
-//     0, falls *this == t
-//     1, falls *this >  t
-
+/*!
+** @name      CAVLTree
+** @brief     AVL-TREE平衡二叉树类
+**
+** Requirements for the class T:
+** Objects of class T must be comparable.
+** A function
+** int T::Compare(const T& t) const
+** must be implemented.
+** Return values:
+**    -1, if *this <  t
+**     0, if *this == t
+**     1, if *this >  t
+**
+******************************************************************************* 
+*/
 template <class T>
 class CAVLTree
 {
 public:
     // construction and destruction
-    // Standard-Konstruktor, Konstruktor und Destruktor
     CAVLTree();
     virtual ~CAVLTree();
 
     // information
-    // Informationen
     bool IsEmpty() const;
     int GetDepth() const;
     long NodesInTree() const;
 
     // access to the root of the tree
-    // Zugriff auf die Wurzel
     CAVLNode<T>* GetRoot();
 
     // insert and delete
-    // Insert und Delete
     CAVLNode<T>* Insert(T* data, bool autodelete = true);
     bool Delete(T* data);
 
     bool DeleteAll();
 
     // delete current node of an iterator
-    // Aktuellen Knoten eines Iterators l?schen
     bool Delete(CAVLTreeIterator<T>& iter, bool movenext = true);
 
     // search
-    // Suchen
     virtual CAVLNode<T>* Search(const T* data);
     virtual CAVLNode<T>* Search(T& data);
 	
 	virtual T* SearchObject(const T* data);
 	virtual T* SearchObject(T& data);
 	
-#ifdef _MSC_VER
-    void Draw(CDC* dc, CRect& rect);
-#endif
+//#ifdef _MSC_VER
+//    void Draw(CDC* dc, CRect& rect);
+//#endif
 
 private:
     CAVLNode<T>* Tree;
-
     friend class CAVLTreeIterator<T>;
-    /* siehe unten
-    friend class CAVLTreeDialog<T>;
-    */
+    //friend class CAVLTreeDialog<T>;
 };
 
 template <class T>
@@ -867,16 +792,13 @@ template <class T>
 CAVLNode<T>* CAVLTree<T>::Insert(T* data, bool autodelete)
 {
     // if the tree is empty, the root is used to store the entry
-
-    // Wenn der Baum noch leer ist, kann (und mu?) die Wurzel
-    // selbst dazu benutzt werden, um den Eintrag aufzunehmen
     if (IsEmpty())
     {
         Tree = new CAVLNode<T>(data, 0, NULL, NULL, NULL);
         return Tree;
     }
+    
     // detect insert position
-    // Einf?geposition ermitteln
     CAVLNode<T>* item = Tree->GetInsertPosition(data);
     if (item == NULL)
     {
@@ -884,21 +806,21 @@ CAVLNode<T>* CAVLTree<T>::Insert(T* data, bool autodelete)
             delete data;
         return NULL;
     }
+    
     // create a new node
-    // Neuen Knoten erzeugen
     CAVLNode<T>* newitem = new CAVLNode<T>(data, 0, item, NULL, NULL);
+    
     // link with parents
-    // Mit Eltern verkn?pfen
     if (CAVLNode<T>::Compare(*(item->Data), *data) == -1)
         item->Right = newitem;
     else
         item->Left = newitem;
+    
     // restructuration
-    //Restrukturierungs-Ma?nahmen
     newitem->RestructureInsert();
     Tree = Tree->GetRoot();
+    
     // return the new inserted node
-    // R?ckgabe des neu eingef?gten Knotens
     return newitem;
 };
 
@@ -906,21 +828,17 @@ template <class T>
 bool CAVLTree<T>::Delete(T* data)
 {
     // if the tree is empty there is nothing to delete
-    // Wenn der Baum leer ist, gibt es auch nichts zu l?schen
     if (IsEmpty()) return false;
+    
     CAVLNode<T>* item = Tree->Search(data);
-    if (item == NULL) return false; // Element nicht im Baum
+    if (item == NULL) return false; 
     // element not in the tree
 
     // if we want to delete the root item, we have to do some extra
     // operation the preserve some pointers...
-    // Wenn die Wurzel gel?scht werden soll, m?ssen entsprechende
-    // Vorkehrungen getroffen werden, um den Zeiger nicht zu
-    // verlieren
     if (item == Tree)
     {
         // the root is the only one node in the tree
-        // Die Wurzel ist der einzige Knoten im Baum
         if (item->Left == NULL && item->Right == NULL)
         {
             delete Tree;
@@ -929,10 +847,8 @@ bool CAVLTree<T>::Delete(T* data)
         }
     }
     // start node for restructuration
-    // Startknoten f?r Restrukturierung
     CAVLNode<T>* startitem = NULL;
     // node to delete has no children
-    // Zu l?schender Knoten hat keine S?hne
     if (item->Left == NULL && item->Right == NULL)
     {
         if (item->IsLeftSibling())
@@ -944,7 +860,6 @@ bool CAVLTree<T>::Delete(T* data)
         item = NULL;
     }
     // node to delete has only right son
-    // Zu l?schender Knoten hat nur rechten Sohn
     if (item != NULL && item->Left == NULL && item->Right != NULL)
     {
         delete item->Data;
@@ -955,7 +870,6 @@ bool CAVLTree<T>::Delete(T* data)
         startitem = item;
     }
     // node to delete has only left son
-    // Zu l?schender Knoten hat nur linken Sohn
     if (item != NULL && item->Left != NULL && item->Right == NULL)
     {
         delete item->Data;
@@ -966,7 +880,6 @@ bool CAVLTree<T>::Delete(T* data)
         startitem = item;
     }
     // node to delete has both sons
-    // Zu l?schender Knoten hat beide S?hne
     if (item != NULL && item->Left != NULL && item->Right != NULL)
     {
         CAVLNode<T>* y = item->Left->GetLastNodeInOrder();
@@ -974,12 +887,7 @@ bool CAVLTree<T>::Delete(T* data)
         delete item->Data;
         item->Data = y->Data;
         y->Data = NULL;
-        /*
-        if (y->IsLeftSibling())
-            y->Parent->Left = z;
-        else
-            y->Parent->Right = z;
-        */
+
         if (z != NULL)
         {
             y->Data = z->Data;
@@ -1123,34 +1031,35 @@ bool CAVLTree<T>::Delete(CAVLTreeIterator<T>& iter, bool movenext)
     return ret;
 };
 
-#ifdef _MSC_VER
-template <class T>
-void CAVLTree<T>::Draw(CDC* dc, CRect& rect)
-{
-    if (IsEmpty()) return;
-    Tree->Draw(dc, rect);
-};
-#endif
+//#ifdef _MSC_VER
+//template <class T>
+//void CAVLTree<T>::Draw(CDC* dc, CRect& rect)
+//{
+//    if (IsEmpty()) return;
+//    Tree->Draw(dc, rect);
+//};
+//#endif
 
-////////////////////////////////////////////////////////////////
-// Iterator durch einen AVL-Baum                              //
-////////////////////////////////////////////////////////////////
+
+/*!
+** @name      CAVLTreeIterator
+** @brief     AVL-TREE平衡二叉树迭代类
+**
+******************************************************************************* 
+*/
 template <class T>
 class CAVLTreeIterator
 {
 public:
     // construction and destruction
-    // Konstruktor und Destruktor
     CAVLTreeIterator(CAVLNode<T>* tree);
     CAVLTreeIterator(CAVLTree<T>& tree);
     virtual ~CAVLTreeIterator();
 
     // validity
-    // G?ltigkeitspr?fung
     operator bool();
 
     // navigation
-    // Navigation
     void operator ++();
     void operator --();
     void operator ++(int);
@@ -1162,7 +1071,6 @@ public:
     void MovePrev();
 
     // access to current node
-    // Zugriff auf aktuellen Knoten
     T* GetData();
     CAVLNode<T>* Current;
 private:
@@ -1282,24 +1190,24 @@ T* CAVLTreeIterator<T>::GetData()
         return NULL;
 };
 
-/* Code kann bei entsprechender Resourcen-Definition wieder eingesetzt
-   werden, siehe Projekt ?????
+/* 
 template <class T>
 class CAVLTreeDialog : public CDialog
 {
 public:
-    CAVLTreeDialog(CAVLTree<T>& tree, CWnd* pParent = NULL);   // standard constructor
+    // standard constructor
+    CAVLTreeDialog(CAVLTree<T>& tree, CWnd* pParent = NULL);   
 
-// Dialog Data
+    // Dialog Data
     enum { IDD = IDD_VEKTORTREEDIALOG1 };
     CTreeCtrl   m_Tree;
 
 
-// Overrides
+    // Overrides
     protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-// Implementation
+    // Implementation
 protected:
     CAVLTree<T>& Tree;
     CImageList  m_ctlImage;
@@ -1347,5 +1255,8 @@ void CAVLTreeDialog<T>::Insert(CAVLNode<T>* tree, HTREEITEM pos)
     Insert(tree->Right, newpos);
 };
 */
-#endif // __AVL_TREE_H__
+
 }
+
+#endif//__AVL_TREE_H__
+
