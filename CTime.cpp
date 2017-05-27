@@ -108,6 +108,72 @@ int CTime::GetWeekDay()
 	return atoi(buffer);
 }
 
+bool CTime::ConvertStringToTm(const char *pszTimeFmt, struct tm *ptm)
+{
+	char szBuffer[7];
+	struct tm tmStaTime;
+	time_t lt;
+	
+	/* Get year */
+	memcpy(szBuffer, pszTimeFmt, 4);
+	szBuffer[4] = 0;
+	tmStaTime.tm_year = atoi(szBuffer) - 1900;
+
+	/* Get month */
+	memcpy(szBuffer, pszTimeFmt + 4, 2);
+	szBuffer[2] = 0;
+	tmStaTime.tm_mon = atoi(szBuffer) - 1;
+
+	/* Get day */
+	memcpy(szBuffer, pszTimeFmt + 6, 2);
+	szBuffer[2] = 0;
+	tmStaTime.tm_mday = atoi(szBuffer);
+
+	/* Get hour */
+	memcpy(szBuffer, pszTimeFmt + 8, 2);
+	szBuffer[2] = 0;
+	tmStaTime.tm_hour = atoi(szBuffer);
+
+	/* Get minute */
+	memcpy(szBuffer, pszTimeFmt + 10, 2);
+	szBuffer[2] = 0;
+	tmStaTime.tm_min = atoi(szBuffer);
+		
+	/* Get second */
+	memcpy(szBuffer, pszTimeFmt + 12, 2);
+	szBuffer[2] = 0;
+	tmStaTime.tm_sec = atoi(szBuffer);
+	
+	tmStaTime.tm_isdst = -1; /* daylight savings time */
+
+	lt = mktime(&tmStaTime);
+
+	if(lt == -1) return false;
+		
+#ifdef WIN32
+	tmStaTime=*localtime(&lt);
+#else
+	localtime_r(&lt, &tmStaTime);
+#endif
+	
+	*ptm = tmStaTime;
+
+	return true;
+}
+
+double CTime::ComputeDuration(const char * pszBegTime, const char * pszEndTime)
+{
+    struct tm cBegTm;
+    struct tm cEndTm;
+
+    ConvertStringToTm(pszBegTime, &cBegTm);
+    ConvertStringToTm(pszEndTime, &cEndTm);
+
+    //return mktime(&cEndTm) - mktime(&cBegTm);
+    return difftime(mktime(&cEndTm), mktime(&cBegTm));
+}
+
+
 void CTime::BeginTime()
 {
 	gettimeofday(&g_previousTv, 0);

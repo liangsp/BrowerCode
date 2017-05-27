@@ -3,9 +3,11 @@
 #include "slog.h"
 #include "AVLTree.h"
 #include "ErrMsg.h"
+#include <bitset>
 
 
 using namespace lspublic;
+using namespace std;
 
 
 #ifndef SIGN
@@ -82,6 +84,9 @@ eTestRet CTestCase::TestCTime()
     
     usetime = 0;	
     usetime = CTime::EndTime();
+
+    double duration = CTime::ComputeDuration("20120527153501", "20170527153600");
+    printf("duration:%f\n", duration);
     	
     TL_MSG("usetime: 【%ld】ms", usetime);
     
@@ -186,16 +191,37 @@ eTestRet CTestCase::TestClient()
 
 eTestRet CTestCase::TestSomeCode()
 {
-    char buffer11[] = "#0|1993|80A|102010168861|2000760|0|201705|10138|6|6;#2|1993|80A|102010168861|2000760|0|201705|10138|6|6;";
-    char * pToken = NULL;
-
-
-    printf("%s\n", buffer11);
-    pToken = strtok(buffer11, ";");
-    while(pToken != NULL)
+    if(0)
     {
-        printf("%s\n", pToken);
-        pToken = strtok(NULL, ";");
+        char buffer11[] = "#0|1993||102010168861|2000760|0|201705|10138|6|6";
+        char * pToken = NULL;
+
+        printf("%s\n", buffer11);
+        pToken = strtok(buffer11, "|");
+        while(pToken != NULL)
+        {
+            printf("%s\n", pToken);
+            pToken = strtok(NULL, "|");
+        }
+    }
+    else if(1)
+    {
+        enum{BITS_COUNT = 16};
+        bitset<BITS_COUNT> bitBucket(0xFFFF);
+        printf("bitBucket[%s]\n", bitBucket.to_string().c_str());
+
+        for(int i = 0; i < BITS_COUNT; i += 2)
+        {
+            bitBucket.set(i, false);
+        }
+        printf("bitBucket[%s]\n", bitBucket.to_string().c_str());
+
+        printf("bitBucket[%s]有%u位1\n", bitBucket.to_string().c_str(), bitBucket.count());
+
+        if(bitBucket.test(BITS_COUNT-1))
+        {
+            printf("[%s]第%u位为1, 共[%u]位\n", bitBucket.to_string().c_str(), BITS_COUNT - 1, bitBucket.size());
+        }
     }
 
     return kTestPass;

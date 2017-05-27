@@ -85,7 +85,10 @@ public:
 	**
 	*/
 	static int GetWeekDay();
-	
+
+    static bool ConvertStringToTm(const char *pszTimeFmt, struct tm *ptm);
+
+    static double ComputeDuration(const char * pszBegTime, const char * pszEndTime);
 	
 	/*
 	** @brief BeginTime  开始计时    
