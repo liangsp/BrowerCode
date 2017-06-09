@@ -23,12 +23,11 @@ namespace lspublic {
     #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-template <class T> class CAVLTree;
-template <class T> class CAVLTreeIterator;
+template <typename T> class CAVLTree;
+template <typename T> class CAVLTreeIterator;
 
-//template <class T> 
+//template <typename T> 
 //class CAVLTreeDialog;
-
 
 /*!
 ** @name      CAVLNode
@@ -36,7 +35,7 @@ template <class T> class CAVLTreeIterator;
 **
 ******************************************************************************* 
 */
-template <class T>
+template <typename T>
 class CAVLNode
 {
 public:
@@ -120,7 +119,7 @@ private:
     friend class CAVLTree<T>;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>::CAVLNode(T* data, int balance, CAVLNode<T>* parent, CAVLNode<T>* left, CAVLNode<T>* right)
     : Data(data),
       Balance(balance),
@@ -130,7 +129,7 @@ CAVLNode<T>::CAVLNode(T* data, int balance, CAVLNode<T>* parent, CAVLNode<T>* le
 {
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>::~CAVLNode()
 {
     delete Left;
@@ -138,7 +137,7 @@ CAVLNode<T>::~CAVLNode()
     delete Data;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::RestructureInsert()
 {
     CAVLNode<T>* item = this;
@@ -189,7 +188,7 @@ bool CAVLNode<T>::RestructureInsert()
     return true;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::RestructureDelete()
 {
     CAVLNode<T>* item = this;
@@ -310,7 +309,7 @@ bool CAVLNode<T>::RestructureDelete()
     return true;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::Search(const T* data)
 {
     switch (Compare(*Data, *data))
@@ -326,43 +325,43 @@ CAVLNode<T>* CAVLNode<T>::Search(const T* data)
     return NULL;
 };
 
-template <class T>
+template <typename T>
 int CAVLNode<T>::Compare(const T& t1, const T& t2)
 {
     return t1.Compare(t2);
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::IsRoot() const
 {
     return Parent == NULL;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::IsLeftSibling() const
 {
     return !IsRoot() && Parent->Left == this;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::IsRightSibling() const
 {
     return !IsRoot() && Parent->Right == this;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::HasLeftSibling() const
 {
     return !IsRoot() && IsRightSibling() && Parent->Left != NULL;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::HasRightSibling() const
 {
     return !IsRoot() && IsLeftSibling() && Parent->Right != NULL;
 };
 
-template <class T>
+template <typename T>
 int CAVLNode<T>::GetDepth() const
 {
     int i = 0;
@@ -373,7 +372,7 @@ int CAVLNode<T>::GetDepth() const
     return i+1;
 };
 
-template <class T>
+template <typename T>
 int CAVLNode<T>::GetLevel() const
 {
     const CAVLNode<T>* item = this;
@@ -386,7 +385,7 @@ int CAVLNode<T>::GetLevel() const
     return level;
 };
 
-template <class T>
+template <typename T>
 int CAVLNode<T>::NodesInTree() const
 {
     int Nodes = 1;
@@ -397,7 +396,7 @@ int CAVLNode<T>::NodesInTree() const
     return Nodes;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetRoot()
 {
     CAVLNode<T>* item = this;
@@ -405,21 +404,21 @@ CAVLNode<T>* CAVLNode<T>::GetRoot()
     return item;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetLeftSibling()
 {
     if (IsRoot() || IsLeftSibling()) return NULL;
     return Parent->Left;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetRightSibling()
 {
     if (IsRoot() || IsRightSibling()) return NULL;
     return Parent->Right;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetFirstNodeInOrder()
 {
     CAVLNode<T>* item = this;
@@ -430,7 +429,7 @@ CAVLNode<T>* CAVLNode<T>::GetFirstNodeInOrder()
     return item;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetLastNodeInOrder()
 {
     CAVLNode<T>* item = this;
@@ -441,7 +440,7 @@ CAVLNode<T>* CAVLNode<T>::GetLastNodeInOrder()
     return item;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetPrevNodeInOrder()
 {
     if (Left != NULL)
@@ -460,7 +459,7 @@ CAVLNode<T>* CAVLNode<T>::GetPrevNodeInOrder()
     return NULL;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetNextNodeInOrder()
 {
     if (Right != NULL)
@@ -479,7 +478,7 @@ CAVLNode<T>* CAVLNode<T>::GetNextNodeInOrder()
     return NULL;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLNode<T>::GetInsertPosition(const T* data)
 {
     switch (Compare(*Data, *data))
@@ -496,7 +495,7 @@ CAVLNode<T>* CAVLNode<T>::GetInsertPosition(const T* data)
     return NULL; 
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::LeftRotation()
 {
     assert(Right != NULL);
@@ -537,7 +536,7 @@ bool CAVLNode<T>::LeftRotation()
     return true;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::RightRotation()
 {
     assert(Left != NULL);
@@ -578,7 +577,7 @@ bool CAVLNode<T>::RightRotation()
     return true;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::DoubleRotationLeft()
 {
     assert(Left != NULL && Left->Right != NULL);
@@ -627,7 +626,7 @@ bool CAVLNode<T>::DoubleRotationLeft()
     return true;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::DoubleRotationRight()
 {
     assert(Right != NULL && Right->Left != NULL);
@@ -677,7 +676,7 @@ bool CAVLNode<T>::DoubleRotationRight()
 };
 
 //#ifdef _MSC_VER
-//template <class T>
+//template <typename T>
 //void CAVLNode<T>::Draw(CDC* dc, CRect& rect)
 //{
 //    int depth = GetDepth();
@@ -710,8 +709,8 @@ bool CAVLNode<T>::DoubleRotationRight()
 ** @name      CAVLTree
 ** @brief     AVL-TREEÆ½ºâ¶þ²æÊ÷Àà
 **
-** Requirements for the class T:
-** Objects of class T must be comparable.
+** Requirements for the typename T:
+** Objects of typename T must be comparable.
 ** A function
 ** int T::Compare(const T& t) const
 ** must be implemented.
@@ -722,7 +721,7 @@ bool CAVLNode<T>::DoubleRotationRight()
 **
 ******************************************************************************* 
 */
-template <class T>
+template <typename T>
 class CAVLTree
 {
 public:
@@ -764,31 +763,31 @@ private:
     //friend class CAVLTreeDialog<T>;
 };
 
-template <class T>
+template <typename T>
 CAVLTree<T>::CAVLTree() : Tree(NULL)
 {
 };
 
-template <class T>
+template <typename T>
 CAVLTree<T>::~CAVLTree()
 {
     delete Tree;
 };
 
-template <class T>
+template <typename T>
 bool CAVLTree<T>::IsEmpty() const
 {
     return Tree == NULL;
 };
 
-template <class T>
+template <typename T>
 int CAVLTree<T>::GetDepth() const
 {
     if (Tree == NULL) return 0;
     return Tree->GetDepth();
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLTree<T>::Insert(T* data, bool autodelete)
 {
     // if the tree is empty, the root is used to store the entry
@@ -824,7 +823,7 @@ CAVLNode<T>* CAVLTree<T>::Insert(T* data, bool autodelete)
     return newitem;
 };
 
-template <class T>
+template <typename T>
 bool CAVLTree<T>::Delete(T* data)
 {
     // if the tree is empty there is nothing to delete
@@ -911,7 +910,7 @@ bool CAVLTree<T>::Delete(T* data)
     return true;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLTree<T>::Search(const T* data)
 {
     CAVLNode<T>* root = GetRoot();
@@ -920,7 +919,7 @@ CAVLNode<T>* CAVLTree<T>::Search(const T* data)
     return root->Search(data);
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLTree<T>::Search(T& data)
 {
     CAVLNode<T>* root = GetRoot();
@@ -929,7 +928,7 @@ CAVLNode<T>* CAVLTree<T>::Search(T& data)
     return root->Search(&data);
 };
 
-template <class T>
+template <typename T>
 T* CAVLTree<T>::SearchObject(const T* data)
 {
     CAVLNode<T>* root = GetRoot();
@@ -939,7 +938,7 @@ T* CAVLTree<T>::SearchObject(const T* data)
     return node ? node->Data : NULL;
 };
 
-template <class T>
+template <typename T>
 T* CAVLTree<T>::SearchObject(T& data)
 {
     CAVLNode<T>* root = GetRoot();
@@ -949,13 +948,13 @@ T* CAVLTree<T>::SearchObject(T& data)
     return node ? node->Data : NULL;
 };
 
-template <class T>
+template <typename T>
 CAVLNode<T>* CAVLTree<T>::GetRoot()
 {
     return Tree;
 };
 
-template <class T>
+template <typename T>
 long CAVLTree<T>::NodesInTree() const
 {
     if (Tree)
@@ -963,7 +962,7 @@ long CAVLTree<T>::NodesInTree() const
     return 0;
 };
 
-template <class T>
+template <typename T>
 bool CAVLNode<T>::CheckBalances(const char * buffer, unsigned int buflen) const
 {
     int d1 = 0;
@@ -992,7 +991,7 @@ bool CAVLNode<T>::CheckBalances(const char * buffer, unsigned int buflen) const
     return false;
 };
 
-template <class T>
+template <typename T>
 bool CAVLTree<T>::DeleteAll()
 {
     delete Tree;
@@ -1000,7 +999,7 @@ bool CAVLTree<T>::DeleteAll()
     return true;
 };
 
-template <class T>
+template <typename T>
 bool CAVLTree<T>::Delete(CAVLTreeIterator<T>& iter, bool movenext)
 {
     if (!iter)
@@ -1032,7 +1031,7 @@ bool CAVLTree<T>::Delete(CAVLTreeIterator<T>& iter, bool movenext)
 };
 
 //#ifdef _MSC_VER
-//template <class T>
+//template <typename T>
 //void CAVLTree<T>::Draw(CDC* dc, CRect& rect)
 //{
 //    if (IsEmpty()) return;
@@ -1047,7 +1046,7 @@ bool CAVLTree<T>::Delete(CAVLTreeIterator<T>& iter, bool movenext)
 **
 ******************************************************************************* 
 */
-template <class T>
+template <typename T>
 class CAVLTreeIterator
 {
 public:
@@ -1081,7 +1080,7 @@ private:
     friend class CAVLTree<T>;
 };
 
-template <class T>
+template <typename T>
 CAVLTreeIterator<T>::CAVLTreeIterator(CAVLNode<T>* tree)
     : Tree(tree)
 {
@@ -1091,7 +1090,7 @@ CAVLTreeIterator<T>::CAVLTreeIterator(CAVLNode<T>* tree)
         Current = NULL;
 };
 
-template <class T>
+template <typename T>
 CAVLTreeIterator<T>::CAVLTreeIterator(CAVLTree<T>& tree)
     : Tree(tree.Tree)
 {
@@ -1101,12 +1100,12 @@ CAVLTreeIterator<T>::CAVLTreeIterator(CAVLTree<T>& tree)
         Current = NULL;
 };
 
-template <class T>
+template <typename T>
 CAVLTreeIterator<T>::~CAVLTreeIterator()
 {
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::Reset()
 {
     if (Tree)
@@ -1115,7 +1114,7 @@ void CAVLTreeIterator<T>::Reset()
         Current = NULL;
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::MoveFirst()
 {
     if (Tree)
@@ -1124,7 +1123,7 @@ void CAVLTreeIterator<T>::MoveFirst()
         Current = NULL;
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::MoveLast()
 {
     if (Tree)
@@ -1133,55 +1132,55 @@ void CAVLTreeIterator<T>::MoveLast()
         Current = NULL;
 };
 
-template <class T>
+template <typename T>
 CAVLTreeIterator<T>::operator bool()
 {
     return Current != NULL;
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::operator ++()
 {
     if (Current == NULL) return;
     Current = Current->GetNextNodeInOrder();
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::operator --()
 {
     if (Current == NULL) return;
     Current = Current->GetPrevNodeInOrder();
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::operator ++(int)
 {
     if (Current == NULL) return;
     Current = Current->GetNextNodeInOrder();
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::operator --(int)
 {
     if (Current == NULL) return;
     Current = Current->GetPrevNodeInOrder();
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::MoveNext()
 {
     if (Current == NULL) return;
     Current = Current->GetNextNodeInOrder();
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeIterator<T>::MovePrev()
 {
     if (Current == NULL) return;
     Current = Current->GetPrevNodeInOrder();
 };
 
-template <class T>
+template <typename T>
 T* CAVLTreeIterator<T>::GetData()
 {
     if (Current)
@@ -1191,7 +1190,7 @@ T* CAVLTreeIterator<T>::GetData()
 };
 
 /* 
-template <class T>
+template <typename T>
 class CAVLTreeDialog : public CDialog
 {
 public:
@@ -1216,20 +1215,20 @@ protected:
     virtual void Insert(CAVLNode<T>* item, HTREEITEM pos);
 };
 
-template <class T>
+template <typename T>
 CAVLTreeDialog<T>::CAVLTreeDialog(CAVLTree<T>& tree, CWnd* pParent)
     : CDialog(CTreeDialog::IDD, pParent), Tree(tree)
 {
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeDialog<T>::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_TREE1, m_Tree);
 };
 
-template <class T>
+template <typename T>
 BOOL CAVLTreeDialog<T>::OnInitDialog()
 {
     bool ret = CDialog::OnInitDialog();
@@ -1241,7 +1240,7 @@ BOOL CAVLTreeDialog<T>::OnInitDialog()
     return ret;
 };
 
-template <class T>
+template <typename T>
 void CAVLTreeDialog<T>::Insert(CAVLNode<T>* tree, HTREEITEM pos)
 {
     if (tree == NULL)

@@ -15,6 +15,10 @@ public:
 	static eTestRet TestClient();
 
     static eTestRet TestSomeCode();
+
+    static eTestRet TestStreamCode();
+    
+    static eTestRet TestStringCode();
     
 	int Init();
 };
