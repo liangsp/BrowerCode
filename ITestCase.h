@@ -3,7 +3,7 @@
  * @brief   $end$
  *
  *
- * @author	  liangshiping 
+ * @author    liangshiping
  * @date      2016/8/8
  * @version   1.0.0
  *
@@ -26,10 +26,10 @@ enum eTestRet
 };
 
 
-typedef enum eTestRet (*pTestFunc)(void);
+typedef enum eTestRet(*pTestFunc)(void);
 
 /**
-typedef struct TagTestCase 
+typedef struct TagTestCase
 {
     const char *description;
     pTestFunc function;
@@ -40,33 +40,55 @@ typedef struct TagTestCase
 class CCaseElem
 {
 public:
-    CCaseElem(pTestFunc func, const char* pDesc, bool bRun = true)
+    CCaseElem(pTestFunc func, const char *pDesc, bool bRun = true)
     {
         m_pFunc = func;
         m_pszDesc = pDesc;
         m_bRun = bRun;
-	}
-    
-	void Set(pTestFunc func, const char* desc, bool run = true)
-	{
-		m_pFunc = func;
-		m_pszDesc = desc;
-		m_bRun = run;
-	}
+    }
 
-    void SetDesc(const char* pszVal) { m_pszDesc = pszVal; }
-    void SetRuntable(bool bVal) { m_bRun = bVal; }
-    void SetFunc(pTestFunc val) { m_pFunc = val; }
+    void Set(pTestFunc func, const char *desc, bool run = true)
+    {
+        m_pFunc = func;
+        m_pszDesc = desc;
+        m_bRun = run;
+    }
 
-    const char* GetDesc() const { return m_pszDesc; }
-    bool  IsRuntable() const { return m_bRun; }
-    pTestFunc GetFunc() const { return m_pFunc; }
+    void SetDesc(const char *pszVal)
+    {
+        m_pszDesc = pszVal;
+    }
     
+    void SetRuntable(bool bVal)
+    {
+        m_bRun = bVal;
+    }
+    
+    void SetFunc(pTestFunc val)
+    {
+        m_pFunc = val;
+    }
+
+    const char *GetDesc() const
+    {
+        return m_pszDesc;
+    }
+    
+    bool  IsRuntable() const
+    {
+        return m_bRun;
+    }
+    
+    pTestFunc GetFunc() const
+    {
+        return m_pFunc;
+    }
+
 private:
     CCaseElem(); //!< not supported
-    
+
 private:
-    const char*  m_pszDesc;
+    const char  *m_pszDesc;
     bool m_bRun;
     pTestFunc m_pFunc;
 };
@@ -75,12 +97,12 @@ class ITestCase
 {
 public:
     virtual ~ITestCase() {}
-    
+
     int virtual Init() = 0;
-    
-    void Run(void) 
+
+    void Run(void)
     {
-        if( 0 != Init() )
+        if(0 != Init())
         {
             return ;
         }
@@ -98,7 +120,7 @@ public:
             enum eTestRet eRet = it->GetFunc()();
 
             int len = strlen(it->GetDesc());
-            if (len > paddingsz)
+            if(len > paddingsz)
             {
                 len = paddingsz;
             }
@@ -109,18 +131,18 @@ public:
             fflush(stdout);
             switch(eRet)
             {
-            case kUnknow:
-                fprintf(stdout, "[UNKNOW]\n");
-                break;
-            case kTestPass:
-                fprintf(stdout, "[OK]\n");
-                break;
-            case kTestFail:
-                fprintf(stdout, "[FAILED]\n");
-                break;
-            default:
-                fprintf(stdout, "[UNKNOW]\n");
-                break;
+                case kUnknow:
+                    fprintf(stdout, "[UNKNOW]\n");
+                    break;
+                case kTestPass:
+                    fprintf(stdout, "[OK]\n");
+                    break;
+                case kTestFail:
+                    fprintf(stdout, "[FAILED]\n");
+                    break;
+                default:
+                    fprintf(stdout, "[UNKNOW]\n");
+                    break;
             }
             fflush(stdout);
         }

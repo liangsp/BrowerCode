@@ -8,19 +8,21 @@
 class CTestCase: public ITestCase
 {
 public:
-	static eTestRet TestCTime();
-	
+    static eTestRet TestCTime();
+
     static eTestRet TestAVLTree();
-	
-	static eTestRet TestClient();
+
+    static eTestRet TestClient();
 
     static eTestRet TestSomeCode();
 
     static eTestRet TestStreamCode();
-    
+
     static eTestRet TestStringCode();
-    
-	int Init();
+
+    static eTestRet TestSample();
+
+    int Init();
 };
 
 
@@ -28,8 +30,8 @@ public:
 class myThread : public CThread
 {
 public:
-    myThread(){}
-    ~myThread(){}
+    myThread() {}
+    ~myThread() {}
 
     void Run();
 };
