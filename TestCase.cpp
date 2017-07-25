@@ -574,6 +574,7 @@ eTestRet CTestCase::TestStringCode()
                 item.replace(item.begin(), item.end(), "80C");
                 item += " 80A";
                 item += " 80B";
+                item.append(" ***************");
                 cout << "\t@:[" << item << "], size:" << item.size() << endl;
             }
             else
@@ -605,7 +606,7 @@ eTestRet CTestCase::TestStringCode()
             pos = line.find("|", begin);
             if(string::npos == pos)
             {
-                vecStringList.push_back(line.substr(begin)); //!< Last Item
+                vecStringList.push_back(line.substr(begin)); //!< 最后一个
                 break;
             }
             vecStringList.push_back(line.substr(begin, pos - begin));
@@ -621,6 +622,18 @@ eTestRet CTestCase::TestStringCode()
         {
             cout << "\t" << vecStringList[index] << endl;
         }
+
+        cout << "##################################################" << endl;
+
+        vecStringList.clear();
+        int nCount = Parse2Vector(buffer, vecStringList, "|");
+        cout << "nCount = " << nCount << endl;
+        for(std::size_t index = 0; index < vecStringList.size(); ++index)
+        {
+            cout << "\t" << vecStringList[index] << endl;
+        }
+
+        cout << "##################################################" << endl;
 
     } while(0);
 
@@ -643,12 +656,12 @@ eTestRet CTestCase::TestSample()
         _Obj **p = &_S_free_list[0] + 1;
         (void)p;
 
-        _Obj obj; 
+        _Obj obj;
 
         printf("sizeof(obj) = %d, sizeof(obj._M_client_data) = %d, sizeof(obj._M_free_list_link) = %d\n", \
-            (int)sizeof(obj), (int)sizeof(obj._M_client_data), (int)sizeof(obj._M_free_list_link));
+               (int)sizeof(obj), (int)sizeof(obj._M_client_data), (int)sizeof(obj._M_free_list_link));
         printf("%p -> %p -> %p\n", _S_free_list, _S_free_list + 1, _S_free_list + 2);
-        printf("@@sizeof(char) = %d, sizeof(int*) = %d\n", (int)sizeof(char), (int)sizeof(int*));
+        printf("@@sizeof(char) = %d, sizeof(int*) = %d\n", (int)sizeof(char), (int)sizeof(int *));
 
         _Obj temp1;
         temp1._M_client_data[0] = 'A';
@@ -662,8 +675,8 @@ eTestRet CTestCase::TestSample()
         printf("###(temp1):%p -> (temp2):%p\n", &temp1, &temp2);
         printf("###(temp1):%p -> (temp1._M_free_list_link):%p\n", &temp1, temp1._M_free_list_link);
         printf("###(temp1):%p -> (temp1._M_client_data):%p\n", &temp1, &temp1._M_client_data[0]);
-        
-    }while(0);
+
+    } while(0);
 
 
     do
@@ -671,11 +684,38 @@ eTestRet CTestCase::TestSample()
         int *ptrInt = static_cast<int *>(alloc::allocate(sizeof(int)));
         *ptrInt = 10;
         printf("ptrInt = %p, *ptrInd = %d\n", ptrInt, *ptrInt);
-        
-    }while(0);
+
+    } while(0);
 
     return kTestPass;
 }
+
+int CTestCase::Parse2Vector(const char * pszString, std::vector<std::string> &vecStringList, const char *delim)
+{
+    if(NULL == pszString || NULL == delim)
+    {
+        return 0;
+    }
+
+    string line(pszString);
+    string::size_type pos = 0;
+    string::size_type begin = 0;
+    
+    while(1)
+    {
+        pos = line.find(delim, begin);
+        if(string::npos == pos)
+        {
+            vecStringList.push_back(line.substr(begin)); //! 最后一个
+            break;
+        }
+        vecStringList.push_back(line.substr(begin, pos - begin));
+        begin = pos + 1;
+    }
+
+    return(vecStringList.size());
+}
+
 
 
 int CTestCase::Init()
@@ -691,7 +731,7 @@ int CTestCase::Init()
 
 
     oElem.Set(TestClient, "Test class TestClient");
-    oElem.SetRuntable(true);
+    oElem.SetRuntable(false);
     s_vecCase.push_back(oElem);
 
 
@@ -701,17 +741,17 @@ int CTestCase::Init()
 
 
     oElem.Set(TestStreamCode, "Test file stream Code");
-   oElem.SetRuntable(false);
+    oElem.SetRuntable(false);
     s_vecCase.push_back(oElem);
 
 
     oElem.Set(TestStringCode, "Test string Code");
-    oElem.SetRuntable(false);
-    s_vecCase.push_back(oElem); 
+    oElem.SetRuntable(true);
+    s_vecCase.push_back(oElem);
 
 
     oElem.Set(TestSample, "Test Sample");
-    oElem.SetRuntable(true);
+    oElem.SetRuntable(false);
     s_vecCase.push_back(oElem);
 
     return 0;
