@@ -8,6 +8,7 @@
 #include <fstream>
 #include <dirent.h>
 #include "IAlloc.h"
+#include "ConfigFile.h"
 
 
 
@@ -690,6 +691,15 @@ eTestRet CTestCase::TestSample()
     return kTestPass;
 }
 
+eTestRet CTestCase::TestConfig()
+{
+    char szHostIP[64] = "";
+    CConfigFile::GetInstance()->Load("/app/bjabmdev/lsp/dev/obj/xxx.conf");
+    CConfigFile::GetInstance()->GetParamValue("GMDB", "HOST_IP", szHostIP, sizeof(szHostIP));
+    printf("### szHostIP = %s\n", szHostIP);
+    return kTestPass;
+}
+
 int CTestCase::Parse2Vector(const char * pszString, std::vector<std::string> &vecStringList, const char *delim)
 {
     if(NULL == pszString || NULL == delim)
@@ -746,12 +756,16 @@ int CTestCase::Init()
 
 
     oElem.Set(TestStringCode, "Test string Code");
-    oElem.SetRuntable(true);
+    oElem.SetRuntable(false);
     s_vecCase.push_back(oElem);
 
 
     oElem.Set(TestSample, "Test Sample");
     oElem.SetRuntable(false);
+    s_vecCase.push_back(oElem);
+
+    oElem.Set(TestConfig, "Test Config");
+    oElem.SetRuntable(true);
     s_vecCase.push_back(oElem);
 
     return 0;

@@ -12,7 +12,7 @@ CConfigFile::CConfigFile(): m_pBuffer(NULL),
 {
     memset(m_szConfigFile, 0x00, sizeof(m_szConfigFile));
     memset(m_szCfgErrMsg, 0x00, sizeof(m_szCfgErrMsg));
-    QUEUE_INIT(&m_qSectionQueue);
+    QUEUE_INIT(&m_qSectionQueueHead);
 }
 
 CConfigFile::~CConfigFile()
@@ -157,6 +157,47 @@ int CConfigFile::Load(const char *pszFileName)
     return 0;
 }
 
+
+int CConfigFile::GetParamValue(const char *pszSection, const char *pszParamName, char *pszParamValue, int nLength)
+{
+    if(NULL == pszParamName || NULL == pszParamValue || 0 == nLength)
+    {
+        return(-1);
+    }
+    
+    if(NULL == pszSection)
+    {
+        //TODO
+        return(-1);
+    }
+    
+    QUEUE *qSection = NULL;
+    QUEUE *qParamters = NULL;
+    TSection *pSection = NULL;
+    TParameter *pParameter = NULL;
+    
+    QUEUE_FOREACH(qSection, &m_qSectionQueueHead)
+    {
+        pSection = QUEUE_DATA(qSection, TSection, m_qSectionQueue);
+        if(pSection && strncmp(pSection->m_szSection, pszSection, sizeof(pSection->m_szSection)) == 0)
+        {
+            QUEUE_FOREACH(qParamters, &pSection->m_qParamQueueHead)
+            {
+                pParameter = QUEUE_DATA(qParamters, TParameter, m_qParameterQueue);
+                if(pParameter && strncmp(pParameter->m_szName, pszParamName, sizeof(pParameter->m_szName)) == 0)
+                {
+                    strncpy(pszParamValue, pParameter->m_szValue, nLength);
+                    pszParamValue[nLength - 1] = 0;
+                    break;
+                }
+            }
+        }
+    }
+
+    return(1);
+}
+
+
 int CConfigFile::AnalyBuffer()
 {
     if(NULL == m_pBuffer)
@@ -166,9 +207,11 @@ int CConfigFile::AnalyBuffer()
     }
     int nRetCode = -1;
     int nOffset = 0;
-    TParameter *ptParameter = NULL;
+    TParameter *pParameter = NULL;
+    TSection *pCurSection = NULL;
     char szLine[LENGTH_MAX << 4] = "";
     char szSection[LENGTH_MAX] = "";
+    TParameter tParameter;
 
     for(int i = 0; i < m_nBufferLength; ++i)
     {
@@ -184,6 +227,84 @@ int CConfigFile::AnalyBuffer()
             }
 
             nRetCode = GetSection(szLine, szSection, sizeof(szSection));
+            if(!nRetCode)
+            {
+                bool bFind = false;
+                QUEUE *q;
+                TSection *temp = NULL;
+
+                QUEUE_FOREACH(q, &m_qSectionQueueHead)
+                {
+                    temp = QUEUE_DATA(q, TSection, m_qSectionQueue);
+                    if(temp && strncmp(temp->m_szSection, szSection, sizeof(temp->m_szSection)) == 0)
+                    {
+                        bFind = true;
+                        pCurSection = temp;
+                        break;
+                    }
+                }
+
+                if(!bFind)
+                {
+                    pCurSection = (TSection *)malloc(sizeof(TSection));
+                    if(NULL == pCurSection)
+                    {
+                        SetErrMsg("ÄÚ´æ·ÖÅäÊ§°Ü");
+                        return(-1);
+                    }
+                    memset(pCurSection->m_szSection, 0x00, sizeof(pCurSection->m_szSection));
+                    strncpy(pCurSection->m_szSection, szSection, sizeof(pCurSection->m_szSection) - 1);
+
+                    QUEUE_INIT(&pCurSection->m_qParamQueueHead);
+                    QUEUE_INSERT_TAIL(&m_qSectionQueueHead, &pCurSection->m_qSectionQueue);
+                }
+            }
+            else
+            {
+                pCurSection = (TSection *)malloc(sizeof(TSection));
+                if(NULL == pCurSection)
+                {
+                    SetErrMsg("ÄÚ´æ·ÖÅäÊ§°Ü");
+                    return(-1);
+                }
+                memset(pCurSection->m_szSection, 0x00, sizeof(pCurSection->m_szSection));
+                strncpy(pCurSection->m_szSection, "DEFAULT", sizeof(pCurSection->m_szSection) - 1);
+
+                QUEUE_INIT(&pCurSection->m_qParamQueueHead);
+                QUEUE_INSERT_TAIL(&m_qSectionQueueHead, &pCurSection->m_qSectionQueue);
+            }
+
+            nRetCode = GetParam(szLine, tParameter);
+            if(!nRetCode)
+            {
+                bool bFind = false;
+                QUEUE *q;
+                TParameter *temp = NULL;
+
+                QUEUE_FOREACH(q, &pCurSection->m_qParamQueueHead)
+                {
+                    temp = QUEUE_DATA(q, TParameter, m_qParameterQueue);
+                    if(temp && strncmp(temp->m_szName, tParameter.m_szName, sizeof(temp->m_szName)) == 0)
+                    {
+                        bFind = true;
+                        strncpy(temp->m_szValue, tParameter.m_szValue, sizeof(temp->m_szValue) - 1);
+                        break;
+                    }
+                }
+
+                if(!bFind)
+                {
+                    temp = (TParameter *)malloc(sizeof(TParameter));
+                    if(NULL == pCurSection)
+                    {
+                        SetErrMsg("ÄÚ´æ·ÖÅäÊ§°Ü");
+                        return(-1);
+                    }
+                    memcpy(temp, &tParameter, sizeof(temp));
+                    QUEUE_INSERT_TAIL(&pCurSection->m_qParamQueueHead, &temp->m_qParameterQueue);
+                }
+            }
+            nOffset = i;
         }
     }
 

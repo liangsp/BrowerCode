@@ -23,6 +23,8 @@ public:
 
     static eTestRet TestSample();
 
+    static eTestRet TestConfig();
+
     static int Parse2Vector(const char * pszString, std::vector<std::string> &vecStringList, const char *delim);
 
     int Init();

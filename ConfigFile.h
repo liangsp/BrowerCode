@@ -39,6 +39,17 @@ public:
     int Load(const char *pszFileName = NULL);
 
     /*!
+    ** @name      GetParamValue
+    ** @brief     根据section和parameter name，获取parameter value
+    ** @param[in]    pszSection
+    ** @param[in]    pszParamName
+    ** @param[out]   pszParamValue
+    ** @param[in]    nLength
+    ** @return    
+    */
+    int GetParamValue(const char *pszSection, const char *pszParamName, char *pszParamValue, int nLength);
+
+    /*!
     ** @name        GetLastErrMsg
     ** @brief       获取最后错误信息
     ** @param[in]   无
@@ -54,6 +65,7 @@ private:
     {
         char m_szName[LENGTH_MAX];   //!< name
         char m_szValue[LENGTH_MAX]; //!< value
+        QUEUE m_qParameterQueue; //!< parameter队列
     };
     typedef struct tagParameter TParameter;
 
@@ -61,10 +73,11 @@ private:
     struct tagSection
     {
         char m_szSection[LENGTH_MAX]; //!< section
-        QUEUE m_qParameterQueue;    //!< parameter队列
+        QUEUE m_qSectionQueue;   //!< section队列
+        QUEUE m_qParamQueueHead;   //!< parameter队列头
     };
     typedef struct tagSection TSection;
-    
+
 private:
     /*!
     ** @name      AnalyBuffer
@@ -126,7 +139,7 @@ private:
     char *m_pBuffer; //!< 用来存放配置文件内容
     int m_nBufferLength; //!< 缓存区大小
     char m_szCfgErrMsg[LENGTH_MAX << 2]; //!< 错误信息
-    QUEUE m_qSectionQueue; //!< section队列
+    QUEUE m_qSectionQueueHead; //!< section队列头
 };
 
 #endif//!_CONFIG_FILE_H_
