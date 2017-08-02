@@ -19,8 +19,8 @@
 
 namespace lspublic {
 
-#ifndef max
-    #define max(a, b) (((a) > (b)) ? (a) : (b))
+#ifndef MAX
+    #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
 template <typename T> class CAVLTree;
@@ -397,7 +397,7 @@ int CAVLNode<T>::GetDepth() const
     }
     if(Right != NULL)
     {
-        i = max(i, Right->GetDepth());
+        i = MAX(i, Right->GetDepth());
     }
     return i + 1;
 };

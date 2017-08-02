@@ -3,12 +3,15 @@
 #include "slog.h"
 #include "AVLTree.h"
 #include "ErrMsg.h"
+#include "IAlloc.h"
+#include "ConfigFile.h"
 #include <bitset>
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-#include "IAlloc.h"
-#include "ConfigFile.h"
+#include <algorithm>
+#include <functional>
+
 
 
 
@@ -638,6 +641,29 @@ eTestRet CTestCase::TestStringCode()
 
     } while(0);
 
+    cout << "##################################################" << endl;
+    cout << "#########---------------------------------########" << endl;
+    cout << "##################################################" << endl;
+
+    vector<string> vecfile;
+    vecfile.push_back(string("aax20170802091236"));
+    vecfile.push_back(string("aab20170802091235"));
+    vecfile.push_back(string("aaa20170802091136"));
+
+    for(vector<string>::size_type i = 0; i < vecfile.size(); ++i)
+    {
+        cout << vecfile[i] << endl;
+    }
+
+    cout << "#########---------------------------------########" << endl;
+
+    std::sort(vecfile.begin(), vecfile.end());
+
+    for(vector<string>::size_type i = 0; i < vecfile.size(); ++i)
+    {
+        cout << vecfile[i] << endl;
+    }
+
     return kTestPass;
 }
 
@@ -756,7 +782,7 @@ int CTestCase::Init()
 
 
     oElem.Set(TestStringCode, "Test string Code");
-    oElem.SetRuntable(false);
+    oElem.SetRuntable(true);
     s_vecCase.push_back(oElem);
 
 
@@ -765,7 +791,7 @@ int CTestCase::Init()
     s_vecCase.push_back(oElem);
 
     oElem.Set(TestConfig, "Test Config");
-    oElem.SetRuntable(true);
+    oElem.SetRuntable(false);
     s_vecCase.push_back(oElem);
 
     return 0;
