@@ -4,6 +4,78 @@
 #include <stdio.h>
 #include <string.h>
 
+static const char LINE_FEED				= (char)0x0a;
+static const char LF = LINE_FEED;
+static const char CARRIAGE_RETURN		= (char)0x0d;
+static const char CR = CARRIAGE_RETURN;
+static const char SPACES				= (char)0x20;
+static const char SP = SPACES;
+static const char HORIZONTAL_TEXT	    = (char)0x09;
+static const char HT = HORIZONTAL_TEXT;
+
+
+static char *trimLeft(char *str, int length)
+{
+    if(*str == '\0' || length == 0 || str == NULL)
+    {
+        return NULL;
+    }
+
+    int index = 0;
+    char *pTemp = NULL;
+    char *start = NULL;
+
+    pTemp = new char[length + 1];
+    memset(pTemp, 0x00, length + 1);
+    memcpy(pTemp, str, length);
+
+    start = pTemp;
+    while(SP == (*start) || HT == (*start))
+    {
+        start ++;
+    }
+
+    memcpy(str, start, strlen(start));
+    str[strlen(start)] = '\0';
+
+    delete [] pTemp;
+
+    return str;
+}
+
+static char *trimRight(char *str, int length)
+{
+    if(*str == '\0' || length == 0 || str == NULL)
+    {
+        return NULL;
+    }
+
+    char *end = NULL;
+    end = str + length - 1;
+
+    while(SP == *end || HT == *end)
+    {
+        *end = '\0';
+        if(end == str)
+        {
+            break;
+        }
+        end--;
+    }
+
+    return str;
+}
+
+static char *trim(char *str, int length)
+{
+    char *s = NULL;
+    s = trimLeft(str, length);
+    s = trimRight(str, strlen(s));
+
+    return s;
+}
+
+
 
 CConfigFile CConfigFile::m_Instance;
 
@@ -157,25 +229,24 @@ int CConfigFile::Load(const char *pszFileName)
     return 0;
 }
 
-
 int CConfigFile::GetParamValue(const char *pszSection, const char *pszParamName, char *pszParamValue, int nLength)
 {
     if(NULL == pszParamName || NULL == pszParamValue || 0 == nLength)
     {
         return(-1);
     }
-    
+
     if(NULL == pszSection)
     {
         //TODO
         return(-1);
     }
-    
+
     QUEUE *qSection = NULL;
     QUEUE *qParamters = NULL;
     TSection *pSection = NULL;
     TParameter *pParameter = NULL;
-    
+
     QUEUE_FOREACH(qSection, &m_qSectionQueueHead)
     {
         pSection = QUEUE_DATA(qSection, TSection, m_qSectionQueue);
@@ -197,7 +268,6 @@ int CConfigFile::GetParamValue(const char *pszSection, const char *pszParamName,
     return(1);
 }
 
-
 int CConfigFile::AnalyBuffer()
 {
     if(NULL == m_pBuffer)
@@ -205,6 +275,7 @@ int CConfigFile::AnalyBuffer()
         SetErrMsg("ÄÚ´æ·ÖÅäÊ§°Ü");
         return(-1);
     }
+
     int nRetCode = -1;
     int nOffset = 0;
     TParameter *pParameter = NULL;
@@ -255,24 +326,25 @@ int CConfigFile::AnalyBuffer()
                     memset(pCurSection->m_szSection, 0x00, sizeof(pCurSection->m_szSection));
                     strncpy(pCurSection->m_szSection, szSection, sizeof(pCurSection->m_szSection) - 1);
 
+                    QUEUE_INIT(&pCurSection->m_qSectionQueue);
                     QUEUE_INIT(&pCurSection->m_qParamQueueHead);
                     QUEUE_INSERT_TAIL(&m_qSectionQueueHead, &pCurSection->m_qSectionQueue);
                 }
             }
-            else
-            {
-                pCurSection = (TSection *)malloc(sizeof(TSection));
-                if(NULL == pCurSection)
-                {
-                    SetErrMsg("ÄÚ´æ·ÖÅäÊ§°Ü");
-                    return(-1);
-                }
-                memset(pCurSection->m_szSection, 0x00, sizeof(pCurSection->m_szSection));
-                strncpy(pCurSection->m_szSection, "DEFAULT", sizeof(pCurSection->m_szSection) - 1);
+            //else
+            //{
+            //    pCurSection = (TSection *)malloc(sizeof(TSection));
+            //    if(NULL == pCurSection)
+            //    {
+            //        SetErrMsg("ÄÚ´æ·ÖÅäÊ§°Ü");
+            //        return(-1);
+            //    }
+            //    memset(pCurSection->m_szSection, 0x00, sizeof(pCurSection->m_szSection));
+            //    strncpy(pCurSection->m_szSection, "DEFAULT", sizeof(pCurSection->m_szSection) - 1);
 
-                QUEUE_INIT(&pCurSection->m_qParamQueueHead);
-                QUEUE_INSERT_TAIL(&m_qSectionQueueHead, &pCurSection->m_qSectionQueue);
-            }
+            //    QUEUE_INIT(&pCurSection->m_qParamQueueHead);
+            //    QUEUE_INSERT_TAIL(&m_qSectionQueueHead, &pCurSection->m_qSectionQueue);
+            //}
 
             nRetCode = GetParam(szLine, tParameter);
             if(!nRetCode)
@@ -300,7 +372,14 @@ int CConfigFile::AnalyBuffer()
                         SetErrMsg("ÄÚ´æ·ÖÅäÊ§°Ü");
                         return(-1);
                     }
-                    memcpy(temp, &tParameter, sizeof(temp));
+
+                    memset(temp->m_szName, 0x00, sizeof(temp->m_szName));
+                    memset(temp->m_szValue, 0x00, sizeof(temp->m_szValue));
+                    QUEUE_INIT(&temp->m_qParameterQueue);
+
+                    //memcpy(temp, &tParameter, sizeof(temp));
+                    strcpy(temp->m_szName, tParameter.m_szName);
+                    strcpy(temp->m_szValue, tParameter.m_szValue);
                     QUEUE_INSERT_TAIL(&pCurSection->m_qParamQueueHead, &temp->m_qParameterQueue);
                 }
             }
@@ -311,7 +390,7 @@ int CConfigFile::AnalyBuffer()
     return(0);
 }
 
-int CConfigFile::GetSection(const char *pszLine, char *pszSection, int32_t nLength)
+int CConfigFile::GetSection(const char *pszLine, char *pszSection, int nLength)
 {
     if(NULL == pszLine || NULL == pszSection || 0 == nLength)
     {
@@ -319,9 +398,9 @@ int CConfigFile::GetSection(const char *pszLine, char *pszSection, int32_t nLeng
     }
 
     int size = 0;
-    char *pSectionBegin = NULL;
-    char *pSectionEnd = NULL;
-    char *pToken = NULL;
+    const char *pSectionBegin = NULL;
+    const char *pSectionEnd = NULL;
+    const char *pToken = NULL;
 
     pSectionBegin = strchr(pszLine, '[');
     pSectionEnd = strchr(pszLine, ']');
@@ -355,8 +434,8 @@ int CConfigFile::GetParam(const char *pszLine, TParameter &tParameter)
         return(-1);
     }
 
-    char *pParamBegin = NULL;
-    char *pParamEnd = NULL;
+    const char *pParamBegin = NULL;
+    const char *pParamEnd = NULL;
 
     pParamBegin = strchr(pszLine, '=');
     pParamEnd = strchr(pszLine, '#');
@@ -370,6 +449,8 @@ int CConfigFile::GetParam(const char *pszLine, TParameter &tParameter)
 
     size = pParamBegin - pszLine;
     strncpy(tParameter.m_szName, pszLine, size);
+    trim(tParameter.m_szName, sizeof(tParameter.m_szName));
+    //tParameter.m_szName[size] = '0';
 
     if(pParamEnd)
     {
@@ -380,7 +461,9 @@ int CConfigFile::GetParam(const char *pszLine, TParameter &tParameter)
         size = strlen(pszLine) - (pParamBegin - pszLine);
     }
 
-    strncpy(tParameter.m_szName, pParamBegin  + 1, size);
+    strncpy(tParameter.m_szValue, pParamBegin  + 1, size);
+    trim(tParameter.m_szValue, sizeof(tParameter.m_szValue));
+    //tParameter.m_szValue[size] = '0';
 
     return(0);
 }

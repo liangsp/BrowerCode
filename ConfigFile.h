@@ -26,7 +26,7 @@ public:
     ** @brief     获取类实例
     ** @return    CConfigFile*
     */
-    static CConfigFile* GetInstance();
+    static CConfigFile *GetInstance();
 
     /*!
     ** @name        Load
@@ -45,9 +45,10 @@ public:
     ** @param[in]    pszParamName
     ** @param[out]   pszParamValue
     ** @param[in]    nLength
-    ** @return    
+    ** @return
     */
     int GetParamValue(const char *pszSection, const char *pszParamName, char *pszParamValue, int nLength);
+
 
     /*!
     ** @name        GetLastErrMsg
@@ -135,6 +136,7 @@ private:
 
 private:
     static CConfigFile m_Instance; //!类实例
+
     char m_szConfigFile[LENGTH_MAX]; //!< 配置文件名，包括绝对路径和文件名
     char *m_pBuffer; //!< 用来存放配置文件内容
     int m_nBufferLength; //!< 缓存区大小
