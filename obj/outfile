@@ -1,3 +1,4 @@
+#THIS is TEST&^%
 #
 # Makefile文件
 # author: liangshiping
@@ -21,8 +22,8 @@ CPPFLAGS = -fPIC
 
 # The pre-processor and compiler options.
 # Users can override those variables from the command line.
-CCFLAGS  = -g -Wall -O1 -fno-strict-aliasing
-CXXFLAGS = -g -Wall -O1 -fno-strict-aliasing
+CCFLAGS  = -g -Wall -O2
+CXXFLAGS = -g -Wall -O2
 
 # 链接选项(ld).
 LDFLAGS  = #-rdynamic

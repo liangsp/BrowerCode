@@ -1,5 +1,6 @@
 #include "TestCase.h"
 #include "CTime.h"
+#include "Common.h"
 #include "slog.h"
 #include "AVLTree.h"
 #include "ErrMsg.h"
@@ -362,6 +363,7 @@ eTestRet CTestCase::TestSomeCode()
         case 4:
         {
             int nSeq = 0;
+            const char *target = ";";
             char *pToken = NULL;
             char *ptr = NULL;
             char buffer[] = ";0,1994,80A,102010168861,2000760,0,201705,10138,16,69;"
@@ -373,14 +375,14 @@ eTestRet CTestCase::TestSomeCode()
             for(ptr = buffer; '\0' != *ptr;)
             {
                 //跳过待分解字符串开始的所有分界符
-                ptr += strspn(ptr, ";");
+                ptr += strspn(ptr, target);
                 if('\0' == *ptr)
                 {
                     break;
                 }
 
                 pToken = ptr;
-                ptr = strstr(ptr, ";");
+                ptr = strstr(ptr, target);
                 //ptr = strpbrk(pToken, ";"); // 使用 strpbrk 函数
                 if(NULL == ptr)
                 {
@@ -719,10 +721,25 @@ eTestRet CTestCase::TestSample()
 
 eTestRet CTestCase::TestConfig()
 {
-    char szHostIP[64] = "";
-    CConfigFile::GetInstance()->Load("/app/bjabmdev/lsp/dev/obj/xxx.conf");
-    CConfigFile::GetInstance()->GetParamValue("GMDB", "HOST_IP", szHostIP, sizeof(szHostIP));
-    printf("### szHostIP = %s\n", szHostIP);
+    char szValue[64] = "";
+    CConfigFile::GetInstance()->Load("/app/yyy/user/lsp/dev/obj/xxx.conf");
+    CConfigFile::GetInstance()->GetParamValue("GMDB", "HOST_IP", szValue, sizeof(szValue));
+    printf("###HOST_IP szValue = %s\n", szValue);
+    CConfigFile::GetInstance()->GetParamValue("GMDB", "LOAD_THREAD_NUM", szValue, sizeof(szValue));
+    printf("###LOAD_THREAD_NUM szValue = %s\n", szValue);
+
+    char buffer1[1024] = "  /app/bjabmdev/lsp/dev/obj/xxx.conf     ";
+
+    printf("buffer1 = #%s#\n", buffer1);
+
+    printf("UpperString = #%s#\n", Common::UpperString(buffer1));
+
+    printf("LowerString = #%s#\n", Common::LowerString(buffer1));
+
+    printf("Trim = #%s#\n", Common::Trim(buffer1, strlen(buffer1)));
+
+    printf("Truncate = #%s#\n", Common::Truncate(buffer1, "/app"));
+    
     return kTestPass;
 }
 
@@ -782,7 +799,7 @@ int CTestCase::Init()
 
 
     oElem.Set(TestStringCode, "Test string Code");
-    oElem.SetRuntable(true);
+    oElem.SetRuntable(false);
     s_vecCase.push_back(oElem);
 
 
@@ -791,7 +808,7 @@ int CTestCase::Init()
     s_vecCase.push_back(oElem);
 
     oElem.Set(TestConfig, "Test Config");
-    oElem.SetRuntable(false);
+    oElem.SetRuntable(true);
     s_vecCase.push_back(oElem);
 
     return 0;
